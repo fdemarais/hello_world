@@ -8,11 +8,11 @@ public class App
 {
     public static String get_message()
     {
-        return "Hello World !"
+        return "Hello World !";
     }
 
     public static void main( String[] args )
     {
-        System.out.println( get_message() )
+        System.out.println( get_message() );
     }
 }
