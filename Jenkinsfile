@@ -13,6 +13,7 @@ pipeline
             steps 
             {
                 bat 'mvn clean'
+                echo "cleaned"
             }
         }
         stage('Install') 
