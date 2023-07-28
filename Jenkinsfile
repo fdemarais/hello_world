@@ -4,16 +4,23 @@ pipeline
     tools 
     {
         maven 'mvn'
+        git 'Default'
     }
 
     stages 
     {
+        stage('Git') 
+        {
+            steps 
+            {
+                git branch: 'main', credentialsId: '82a0c36c-66a7-4823-88c9-95551fdab537', url: 'https://github.com/fdemarais/hello_world'
+            }
+        }
         stage('Clean') 
         {
             steps 
             {
                 bat 'mvn clean'
-                echo "cleaned"
             }
         }
         stage('Install') 
@@ -23,25 +30,29 @@ pipeline
                 bat 'mvn install'
             }
         }
-        stage('Tests') 
+        stage ('Quality')
         {
-            steps 
+            parallel
             {
-                bat 'mvn test'
+                stage('Tests') 
+                {
+                    steps 
+                    {
+                        bat 'mvn test'
+                    }
+                }
+                stage('Sonar') 
+                {
+                    steps
+                    {
+                        withSonarQubeEnv('sonarqube server') 
+                        {
+                            bat 'mvn sonar:sonar'
+                        }
+                    }
+                }
             }
         }
-        stage('Sonar') 
-        {
-            environment 
-            {
-                def scannerHome = tool 'scan';
-            }
-            steps 
-            {
-                bat "\"${scannerHome}\\bin\\sonar-scanner.bat\" -Dsonar.token=sqa_617e409f7f5cc520ed7d9ae18f62a1864ad6d9e0 -Dsonar.projectKey=hello_world -Dsonar.java.binaries=target"
-            }
-        }
-
     }
     post
     {
